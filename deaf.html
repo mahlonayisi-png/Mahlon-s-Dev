@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JCPenney Mastercard · voice-first interface for blind</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0b1420;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .voice-first-card {
+      max-width: 680px;
+      width: 100%;
+      background: #1e2a36;
+      border-radius: 3.5rem;
+      padding: 2.8rem 2.2rem;
+      border: 4px solid #ffb85b;
+      box-shadow: 0 30px 45px #00000080;
+    }
+
+    .feedback-strip {
+      background: #001d33;
+      border-radius: 3rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2.2rem;
+      border-left: 10px solid #ffd966;
+      color: white;
+      font-size: 1.9rem;
+      font-weight: 500;
+      word-break: break-word;
+      box-shadow: inset 0 0 0 2px #5d8bb8;
+      min-height: 7rem;
+      display: flex;
+      align-items: center;
+    }
+
+    #voiceStatus {
+      width: 100%;
+    }
+
+    .listening-dot {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: #6aff8c;
+      border-radius: 50%;
+      margin-right: 1.2rem;
+      box-shadow: 0 0 20px #40ff7e;
+      animation: soft-pulse 1.8s infinite;
+    }
+
+    @keyframes soft-pulse {
+      0% {
+        opacity: 0.7;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.15);
+        background: #b5ffb5;
+      }
+    }
+
+    .voice-account-data {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .secondary-visual {
+      background: #26394b;
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      margin: 1.8rem 0 2rem;
+      border: 2px solid #51718c;
+      color: #d7e7ff;
+    }
+
+    .row {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 1.4rem;
+      margin: 0.7rem 0;
+    }
+
+    .label {
+      color: #ffcd94;
+      font-weight: 500;
+    }
+
+    .value {
+      font-weight: 700;
+      color: white;
+      font-size: 2rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      margin: 2.2rem 0 1.8rem;
+    }
+
+    .voice-btn {
+      flex: 1 1 150px;
+      background: #2f5580;
+      border: none;
+      padding: 1.6rem 1rem;
+      border-radius: 3rem;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 8px 0 #10324f;
+      cursor: pointer;
+      border: 2px solid #9bc2f0;
+      transition: 0.05s linear;
+      min-height: 90px;
+    }
+
+    .voice-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 3px 0 #10324f;
+    }
+
+    .voice-btn.secondary {
+      background: #37536d;
+      box-shadow: 0 8px 0 #203545;
+    }
+
+    .help-lines {
+      background: #1d3142;
+      border-radius: 2rem;
+      padding: 1.5rem 2rem;
+      margin-top: 2rem;
+      color: #bcd3f0;
+      font-size: 1.3rem;
+      border: 2px dashed #ffb85b;
+    }
+
+    .help-lines p {
+      margin: 0.7rem 0;
+    }
+
+    .footer {
+      margin-top: 2.5rem;
+      text-align: right;
+      color: #8db1d9;
+      font-size: 1.5rem;
+      font-weight: 500;
+      border-top: 3px solid #456f98;
+      padding-top: 1.2rem;
+    }
+
+    button:focus-visible {
+      outline: 8px solid #ffd966;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="voice-first-card" role="region" aria-label="JCPenney Mastercard voice interface for blind">
+    <div class="feedback-strip" aria-live="polite" aria-atomic="true">
+      <span class="listening-dot" aria-hidden="true"></span>
+      <span id="voiceStatus">Initializing voice interface ...</span>
+    </div>
+    <div class="voice-account-data" aria-label="account summary">
+      <p>JCPenney Mastercard ending in 3774</p>
+      <p>No minimum payment due</p>
+      <p>Debit bill: 47 hundred 57 dollars</p>
+      <p>Available to spend: 54 dollars</p>
+      <p>Payment due date: January 23</p>
+      <p>Not enrolled in autopay</p>
+    </div>
+    <div class="secondary-visual" aria-hidden="true">
+      <div class="row"><span class="label">JCPenney</span><span class="value">•••• 3774</span></div>
+      <div class="row"><span class="label">debit bill</span><span class="value">$4,757</span></div>
+      <div class="row"><span class="label">available</span><span class="value">$54.00</span></div>
+      <div class="row"><span class="label">due</span><span class="value">Jan 23</span></div>
+    </div>
+    <div class="button-group">
+      <button class="voice-btn" id="btnListen" aria-label="start listening">🎤 LISTEN</button>
+      <button class="voice-btn secondary" id="btnHelp" aria-label="hear commands">❓ HELP</button>
+    </div>
+    <div class="help-lines" aria-label="voice command examples">
+      <p>🗣️ • “read balance” • “available credit” • “make payment”</p>
+      <p>🗣️ • “due date” • “enroll in autopay” • “yes / no” • “listen”</p>
+    </div>
+    <div class="footer" aria-label="synchrony dot com">
+      synchrony.com
+    </div>
+  </div>
+  <script>
+    (function () {
+      const voiceStatus = document.getElementById('voiceStatus');
+      function speak(text, isUrgent = true) {
+        if (isUrgent) window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.92;
+        utterance.pitch = 1.05;
+        utterance.volume = 1;
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+        voiceStatus.innerText = '🔊 ' + text;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition;
+      let listening = false;
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.maxAlternatives = 1;
+        recognition.onstart = () => {
+          listening = true;
+          speak('Listening for your command.');
+        };
+        recognition.onend = () => {
+          listening = false;
+        };
+        recognition.onerror = (ev) => {
+          let msg = 'Sorry, I did not catch that. Please try again.';
+          if (ev.error === 'no-speech') msg = 'No speech detected. Please say a command.';
+          else if (ev.error === 'audio-capture') msg = 'Microphone not available.';
+          speak(msg);
+          listening = false;
+        };
+        recognition.onresult = (event) => {
+          if (event.results.length === 0) return;
+          const transcript = event.results[0][0].transcript.trim().toLowerCase();
+          voiceStatus.innerText = 'You said: "' + transcript + '"';
+          processCommand(transcript);
+        };
+      } else {
+        speak('Speech recognition not supported in this browser. You can use the buttons.');
+      }
+      let expectingAutopayConfirm = false;
+      function processCommand(cmd) {
+        cmd = cmd.replace(/[^\w\s]/g, '').trim();
+        if (cmd.includes('balance') || cmd.includes('what do i owe') || (cmd.includes('read') && cmd.includes('balance')) || cmd === 'balance') {
+          speak('Your current debit bill is 47 hundred 57 dollars. Available credit is 54 dollars.');
+          return;
+        }
+        if (cmd.includes('available') || cmd.includes('how much can i spend') || cmd.includes('credit left')) {
+          speak('You have 54 dollars available to spend.');
+          return;
+        }
+        if (cmd.includes('debit') || cmd.includes('bill') || cmd.includes('statement') || cmd.includes('current balance')) {
+          speak('Your debit bill is 47 hundred 57 dollars.');
+          return;
+        }
+        if (cmd.includes('due') || cmd.includes('when is payment due') || cmd.includes('payment date')) {
+          speak('Your payment is due on January twenty third.');
+          return;
+        }
+        if (cmd.includes('make payment') || cmd.includes('pay now') || cmd.includes('pay bill') || cmd.includes('make a payment')) {
+          speak('Initiating payment. In a real account, I would ask for the amount and confirm. This is a demonstration.');
+          return;
+        }
+        if (cmd.includes('autopay') || cmd.includes('enroll') || cmd.includes('sign up for autopay')) {
+          speak('You are not enrolled in autopay. Would you like to enroll? Say yes or no.');
+          expectingAutopayConfirm = true;
+          return;
+        }
+        if (cmd.includes('yes') || cmd.includes('yeah') || cmd.includes('sure') || cmd.includes('ok')) {
+          if (expectingAutopayConfirm) {
+            speak('You are now enrolled in autopay. You will receive a confirmation.');
+            expectingAutopayConfirm = false;
+          } else {
+            speak('I did not expect a yes. Please say a command like "balance" or "help".');
+          }
+          return;
+        }
+        if (cmd.includes('no') || cmd.includes('nope') || cmd.includes('cancel')) {
+          if (expectingAutopayConfirm) {
+            speak('Autopay enrollment cancelled. You remain not enrolled.');
+            expectingAutopayConfirm = false;
+          } else {
+            speak('Cancelled.');
+          }
+          return;
+        }
+        if (cmd.includes('listen') || cmd.includes('start') || cmd.includes('hello') || cmd.includes('hey')) {
+          speak('I am ready. You can say: read balance, available credit, due date, make payment, enroll in autopay, or help.');
+          return;
+        }
+        if (cmd.includes('help') || cmd.includes('what can i say') || cmd.includes('commands')) {
+          speak('Say: balance, available, due date, make payment, enroll in autopay, or listen.');
+          return;
+        }
+        speak('I didn’t catch that. Say "listen" for options or "help".');
+      }
+      function startListening() {
+        if (!recognition) {
+          speak('Voice recognition unavailable.');
+          return;
+        }
+        if (listening) {
+          try { recognition.stop(); } catch (e) { }
+        }
+        setTimeout(() => {
+          try { recognition.start(); } catch (e) {
+            speak('Could not start microphone. Check permissions.');
+          }
+        }, 100);
+      }
+      document.getElementById('btnListen').addEventListener('click', () => {
+        startListening();
+      });
+      document.getElementById('btnHelp').addEventListener('click', () => {
+        speak('You can say: read balance, available credit, due date, make payment, enroll in autopay, or listen. You can also press the listen button.');
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'l' || e.key === 'L') {
+          e.preventDefault();
+          startListening();
+        }
+      });
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          speak('Welcome to your JCPenney Mastercard account. This is a voice first interface. Say "listen" to begin, or say a command like "read balance".');
+        }, 600);
+      });
+      setInterval(() => {
+        expectingAutopayConfirm = false;
+      }, 30000);
+      window.speak = speak;
+      window.startListening = startListening;
+    })();
+  </script>
+</body>
+
+</html>

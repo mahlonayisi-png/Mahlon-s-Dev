@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special Offers - Food Delivery</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Swiper.js CDN (for advanced slider) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    .offer-slide {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .discount-badge {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+    }
+    
+    .timer {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white">
+  
+  <!-- Special Offers Section -->
+  <section class="py-16 px-6 bg-zinc-900">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+        <div>
+          <h2 class="text-5xl font-bold tracking-tight">🔥 Special Offers</h2>
+          <p class="text-zinc-400 mt-3 text-xl">Limited time deals • Fresh &amp; delicious</p>
+        </div>
+        
+        <!-- Category Tabs -->
+        <div class="flex gap-2 mt-6 md:mt-0 overflow-x-auto pb-2">
+          <button onclick="filterCategory(this)" class="category-tab active px-6 py-2.5 rounded-2xl bg-white text-black font-semibold whitespace-nowrap" data-category="all">All Offers</button>
+          <button onclick="filterCategory(this)" class="category-tab px-6 py-2.5 rounded-2xl hover:bg-zinc-800 font-medium whitespace-nowrap" data-category="pizza">Pizza</button>
+          <button onclick="filterCategory(this)" class="category-tab px-6 py-2.5 rounded-2xl hover:bg-zinc-800 font-medium whitespace-nowrap" data-category="burger">Burgers</button>
+          <button onclick="filterCategory(this)" class="category-tab px-6 py-2.5 rounded-2xl hover:bg-zinc-800 font-medium whitespace-nowrap" data-category="asian">Asian</button>
+          <button onclick="filterCategory(this)" class="category-tab px-6 py-2.5 rounded-2xl hover:bg-zinc-800 font-medium whitespace-nowrap" data-category="dessert">Dessert</button>
+        </div>
+      </div>
+
+      <!-- Main Swiper Slider -->
+      <div class="swiper mainSwiper">
+        <div class="swiper-wrapper" id="offers-wrapper">
+          <!-- Offers will be populated by JS -->
+        </div>
+        
+        <!-- Navigation -->
+        <div class="swiper-button-prev !text-white !bg-black/60 hover:!bg-black/80 !w-12 !h-12 !rounded-2xl"></div>
+        <div class="swiper-button-next !text-white !bg-black/60 hover:!bg-black/80 !w-12 !h-12 !rounded-2xl"></div>
+      </div>
+
+      <!-- Thumbnails / Secondary Slider -->
+      <div class="mt-10">
+        <p class="text-sm text-zinc-500 mb-4 pl-2 font-medium">More Deals</p>
+        <div class="swiper thumbSwiper">
+          <div class="swiper-wrapper" id="thumbs-wrapper">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    // Sample Offers Data
+    const offers = [
+      {
+        id: 1,
+        title: "50% OFF First Order",
+        subtitle: "Any Large Pizza",
+        desc: "Use code: FIRST50 • Valid today only",
+        discount: "50%",
+        price: "From $9.99",
+        image: "https://picsum.photos/id/1080/800/500",
+        category: "pizza",
+        timeLeft: "14h 32m"
+      },
+      {
+        id: 2,
+        title: "Buy 1 Get 1 Free",
+        subtitle: "Classic Cheeseburgers",
+        desc: "Double the flavor, half the price",
+        discount: "BOGO",
+        price: "$12.99",
+        image: "https://picsum.photos/id/292/800/500",
+        category: "burger",
+        timeLeft: "2d 5h"
+      },
+      {
+        id: 3,
+        title: "Free Delivery",
+        subtitle: "On Orders Above $25",
+        desc: "No minimum on selected restaurants",
+        discount: "FREE",
+        price: "Save $5.99",
+        image: "https://picsum.photos/id/431/800/500",
+        category: "all",
+        timeLeft: "48h"
+      },
+      {
+        id: 4,
+        title: "30% OFF Sushi Rolls",
+        subtitle: "Dragon Roll &amp; More",
+        desc: "Freshly made • Limited stock",
+        discount: "30%",
+        price: "From $11.99",
+        image: "https://picsum.photos/id/870/800/500",
+        category: "asian",
+        timeLeft: "9h 15m"
+      },
+      {
+        id: 5,
+        title: "Chocolate Lava Cake",
+        subtitle: "Only $4.99 (Save $3)",
+        desc: "Warm gooey center • Perfect dessert",
+        discount: "40%",
+        price: "$4.99",
+        image: "https://picsum.photos/id/1080/800/500",
+        category: "dessert",
+        timeLeft: "23h"
+      }
+    ];
+
+    // Render main slides
+    function renderOffers() {
+      const wrapper = document.getElementById('offers-wrapper');
+      wrapper.innerHTML = '';
+      
+      offers.forEach(offer => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.innerHTML = `
+          <div class="offer-slide grid md:grid-cols-2 gap-8 bg-zinc-800 rounded-3xl overflow-hidden">
+            <!-- Image -->
+            <div class="relative">
+              <img src="${offer.image}" alt="${offer.title}" class="w-full h-full object-cover aspect-video md:aspect-auto">
+              <div class="absolute top-6 left-6 discount-badge text-white text-4xl font-black px-6 py-2 rounded-2xl shadow-xl">
+                ${offer.discount}
+              </div>
+              <div class="absolute bottom-6 left-6 bg-black/70 text-white text-sm px-4 py-1 rounded-xl flex items-center gap-2">
+                <span class="text-orange-400">⏰</span>
+                <span class="timer" id="timer-${offer.id}">${offer.timeLeft}</span>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-8 flex flex-col justify-center">
+              <div class="uppercase tracking-widest text-orange-500 text-sm font-semibold mb-2">Limited Time</div>
+              <h3 class="text-4xl font-bold leading-tight">${offer.title}</h3>
+              <p class="text-2xl text-zinc-300 mt-2">${offer.subtitle}</p>
+              <p class="text-zinc-400 mt-6">${offer.desc}</p>
+              
+              <div class="mt-8 flex items-center gap-4">
+                <div class="text-3xl font-semibold">${offer.price}</div>
+              </div>
+              
+              <button onclick="claimOffer(${offer.id})" 
+                class="mt-8 bg-orange-500 hover:bg-orange-600 transition-colors text-black font-bold text-lg py-4 px-10 rounded-2xl flex items-center justify-center gap-3 w-fit">
+                <span>Claim Deal Now</span>
+                <span class="text-2xl">→</span>
+              </button>
+            </div>
+          </div>
+        `;
+        wrapper.appendChild(slide);
+      });
+    }
+
+    // Render thumbnails
+    function renderThumbs() {
+      const wrapper = document.getElementById('thumbs-wrapper');
+      wrapper.innerHTML = '';
+      
+      offers.forEach(offer => {
+        const thumb = document.createElement('div');
+        thumb.className = 'swiper-slide';
+        thumb.innerHTML = `
+          <div class="cursor-pointer rounded-2xl overflow-hidden border-2 border-transparent hover:border-orange-500 transition-all">
+            <img src="${offer.image}" class="w-full aspect-video object-cover" alt="${offer.title}">
+            <div class="p-3 bg-zinc-800">
+              <div class="font-semibold text-sm">${offer.title}</div>
+              <div class="text-orange-400 text-xs">${offer.discount} OFF</div>
+            </div>
+          </div>
+        `;
+        wrapper.appendChild(thumb);
+      });
+    }
+
+    // Initialize Swiper sliders
+    let mainSwiper, thumbSwiper;
+    
+    function initSliders() {
+      mainSwiper = new Swiper('.mainSwiper', {
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        speed: 700,
+      });
+
+      thumbSwiper = new Swiper('.thumbSwiper', {
+        loop: true,
+        slidesPerView: 2,
+        spaceBetween: 16,
+        breakpoints: {
+          640: { slidesPerView: 3 },
+          1024: { slidesPerView: 5 }
+        }
+      });
+
+      // Sync thumbnails with main slider (optional)
+      mainSwiper.on('slideChange', () => {
+        thumbSwiper.slideTo(mainSwiper.realIndex);
+      });
+    }
+
+    // Filter by category
+    window.filterCategory = function(btn) {
+      document.querySelectorAll('.category-tab').forEach(b => {
+        b.classList.remove('active', 'bg-white', 'text-black');
+        b.classList.add('hover:bg-zinc-800');
+      });
+      btn.classList.add('active', 'bg-white', 'text-black');
+      
+      const category = btn.dataset.category;
+      
+      // Filter offers (simple demo - in real app you'd re-render)
+      const filtered = category === 'all' ? offers : offers.filter(o => o.category === category);
+      
+      // For demo, we just show a toast
+      showToast(`Showing ${category === 'all' ? 'All' : category} offers`);
+    };
+
+    // Claim offer
+    window.claimOffer = function(id) {
+      const offer = offers.find(o => o.id === id);
+      if (offer) {
+        alert(`🎉 Deal activated!\n\n${offer.title} - ${offer.subtitle}\n\nRedirecting to checkout...`);
+      }
+    };
+
+    // Simple toast
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #18181b; color: white; padding: 16px 24px; border-radius: 9999px;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3); z-index: 9999; font-weight: 500;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.transition = 'all 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // Countdown timers (demo)
+    function startTimers() {
+      offers.forEach(offer => {
+        const timerEl = document.getElementById(`timer-${offer.id}`);
+        if (!timerEl) return;
+        
+        let time = offer.timeLeft;
+        // This is just visual demo - in real app you'd parse actual time
+        setInterval(() => {
+          if (timerEl) timerEl.textContent = time;
+        }, 30000);
+      });
+    }
+
+    // Initialize everything
+    window.onload = function() {
+      renderOffers();
+      renderThumbs();
+      initSliders();
+      startTimers();
+      
+      // Tailwind script already loaded
+      console.log('%cAdvanced Special Offers Section Ready 🔥', 'color:#f59e0b; font-size:14px; font-weight:bold');
+    };
+  </script>
+</body>
+</html>
